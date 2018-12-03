@@ -144,11 +144,18 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 break;
             case R.id.bt_per://百分比
                 if (setJudgeNull()) break;  //判断文本框是否为空
-                String getNumber = getEditTextString;
-                Double getDoubleNumber = Double.parseDouble(getNumber);
-                Double c = getDoubleNumber / 100;
-                tv_show.setText(String.valueOf(c));
-                et_text.setText("");
+                if(!getTextViewString.equals("")){
+                    String getTextViewNumber = getTextViewString;
+                    Double getDoubleNumber = Double.parseDouble(getTextViewNumber);
+                    Double c = getDoubleNumber / 100;
+                    tv_show.setText(String.valueOf(c));
+                }else {
+                    String getEditTextNumber = getEditTextString;
+                    Double getDoubleNumber = Double.parseDouble(getEditTextNumber);
+                    Double c = getDoubleNumber / 100;
+                    tv_show.setText(String.valueOf(c));
+                    et_text.setText("");
+                }
                 break;
         }
     }
@@ -177,22 +184,29 @@ public class MainActivity extends Activity implements View.OnClickListener {
         int index = et_text.getSelectionStart();//删除光标前字符
         if (getEditTextString.length() != 0) {
             et_text.getText().delete(index - 1, index);
-        }else {
-            if (getTextViewString.length()!= 0) {
-                String str = getTextViewString.substring(0, getTextViewString.length() - 1);
+        } else if (getTextViewString.length() != 0) {
+            String str = getTextViewString.substring(0, getTextViewString.length() - 1);
+            if (str.contains(".")) {
+                String str1 = str.substring(str.length() - 1, str.length());//截取最后一位
+                if (str1.equals(".")) {
+                    String str2 = str.substring(0, str.length() - 1);
+                    tv_show.setText(str2);
+                } else {
+                    tv_show.setText(str);
+                }
+            } else {
                 tv_show.setText(str);
             }
-            return;
         }
-
     }
 
     /**
      * 判断是否为空
+     *
      * @return
      */
     private boolean setJudgeNull() {
-        if (getEditTextString.equals("")) {
+        if (getEditTextString.equals("") && getTextViewString.equals("")) {
             Toast.makeText(this, "没有数值输入", Toast.LENGTH_SHORT).show();
             return true;
         }
@@ -201,6 +215,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
     /**
      * 0-9 Button事件处理
+     *
      * @param num_bt
      */
     private void judge(Button num_bt) {
@@ -219,23 +234,33 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private void setOperation(Button bt_a) {
 
         if (getEditTextString.equals("") && !getTextViewString.equals("")) {
-            String str = bt_a.getText().toString();
-            tv_show.append(str);
-
-            return;
+            if (getTextViewString.contains("+")
+                    || getTextViewString.contains("-")
+                    || getTextViewString.contains("*")
+                    || getTextViewString.contains("/")) {
+                String str2 = getTextViewString.substring(0, getTextViewString.length() - 1);
+                String str1 = bt_a.getText().toString();
+                String str3 = str2 + str1;
+                tv_show.setText(str3);
+                return;
+            } else {
+                String str = bt_a.getText().toString();
+                tv_show.append(str);
+                return;
+            }
         }
-        if (getEditTextString.equals("")) {
+        if (getEditTextString.equals("") && getTextViewString.equals("")) {
             Toast.makeText(this, "请输入数字后再运算", Toast.LENGTH_SHORT).show();
             return;
         }
-
-
-        if (!getTextViewString.contains("+") && !getTextViewString.contains("-") && !getTextViewString.contains("*") && !getTextViewString.contains("/")) {
+        if (!getTextViewString.contains("+")
+                && !getTextViewString.contains("-")
+                && !getTextViewString.contains("*")
+                && !getTextViewString.contains("/")) {
             getOperationButton = bt_a.getText().toString();
             one = Double.parseDouble(getEditTextString);
             tv_show.append(one + getOperationButton);
             et_text.setText("");
-
         } else {
 //          bt_equ.performClick();  //执行点击按钮
             setRepetitionCount(bt_a);     //设置重复计算
@@ -244,6 +269,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
     /**
      * 运算符重复计算
+     *
      * @param bt_a
      */
     private void setRepetitionCount(Button bt_a) {
@@ -278,6 +304,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
     /**
      * 重新获取button的text并显示
+     *
      * @param bt_a
      * @param result
      */
