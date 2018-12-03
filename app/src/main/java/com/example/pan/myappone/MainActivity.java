@@ -123,7 +123,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 setOperation(bt_div);
                 break;
             case R.id.bt_equ://等于
-                if (setJudgeNull()) break;  //判断文本框是否为空
+                if (getEditTextString.equals("")) {
+                    Toast.makeText(this, "没有数值输入", Toast.LENGTH_SHORT).show();
+                    return;
+                }  //判断文本框是否为空
                 two = Double.parseDouble(getEditTextString);
                 if (getTextViewString.contains("+")
                         || getTextViewString.contains("-")
@@ -143,20 +146,58 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 setDot();
                 break;
             case R.id.bt_per://百分比
-                if (setJudgeNull()) break;  //判断文本框是否为空
-                if(!getTextViewString.equals("")){
-                    String getTextViewNumber = getTextViewString;
-                    Double getDoubleNumber = Double.parseDouble(getTextViewNumber);
-                    Double c = getDoubleNumber / 100;
-                    tv_show.setText(String.valueOf(c));
-                }else {
-                    String getEditTextNumber = getEditTextString;
-                    Double getDoubleNumber = Double.parseDouble(getEditTextNumber);
-                    Double c = getDoubleNumber / 100;
-                    tv_show.setText(String.valueOf(c));
-                    et_text.setText("");
-                }
+                setPercent();
                 break;
+        }
+    }
+
+    /**
+     * 设置百分比
+     */
+    private void setPercent() {
+        if (getEditTextString.equals("")) {//判断文本框是否为空
+            if (getTextViewString.equals("")) {
+                Toast.makeText(this, "没有数值输入", Toast.LENGTH_SHORT).show();
+                return;
+            } else if (!getTextViewString.equals("")
+                    && !(getTextViewString.contains("+")
+                    || getTextViewString.contains("-")
+                    || getTextViewString.contains("*")
+                    || getTextViewString.contains("/"))) {
+                String getTextViewNumber = getTextViewString;
+                Double getDoubleNumber = Double.parseDouble(getTextViewNumber);
+                Double a = getDoubleNumber / 100;
+                tv_show.setText(String.valueOf(a));
+            }
+        } else if (getTextViewString.equals("")) {
+            String getEditTextNumber = getEditTextString;
+            Double getDoubleNumber = Double.parseDouble(getEditTextNumber);
+            Double b = getDoubleNumber / 100;
+            tv_show.setText(String.valueOf(b));
+            et_text.setText("");
+        } else {
+            char operation = getTextViewString.charAt(getTextViewString.length() - 1);
+            String a_str = getTextViewString.substring(0, getTextViewString.length() - 1);
+            String b_str = getEditTextString;
+            Double a_number = Double.parseDouble(a_str);
+            Double b_number = Double.parseDouble(b_str);
+            double c = 0;
+            switch (operation) {
+                case '+':
+                    c = a_number + b_number;
+                    break;
+                case '-':
+                    c = a_number - b_number;
+                    break;
+                case '*':
+                    c = a_number * b_number;
+                    break;
+                case '/':
+                    c = a_number / b_number;
+                    break;
+            }
+            tv_show.setText(String.valueOf(c / 100));
+            et_text.setText("");
         }
     }
 
@@ -205,13 +246,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
      *
      * @return
      */
-    private boolean setJudgeNull() {
-        if (getEditTextString.equals("") && getTextViewString.equals("")) {
-            Toast.makeText(this, "没有数值输入", Toast.LENGTH_SHORT).show();
-            return true;
-        }
-        return false;
-    }
+
 
     /**
      * 0-9 Button事件处理
@@ -274,32 +309,36 @@ public class MainActivity extends Activity implements View.OnClickListener {
      */
     private void setRepetitionCount(Button bt_a) {
         String tem1 = getTextViewString.substring(getTextViewString.length() - 1);
+        getNewStringText();
         switch (tem1) {
             case "+":
-                getNewStringText();
-                Double result = one + two;
-                getNewButtonText(bt_a, result);//重新获取button文本
+                getNewButtonText(bt_a, one + two);//重新获取button文本
                 break;
             case "-":
-                getNewStringText();
-                Double result1 = one - two;
-                getNewButtonText(bt_a, result1);
+                getNewButtonText(bt_a, one - two);
                 break;
             case "*":
-                getNewStringText();
-                Double result2 = one * two;
-                getNewButtonText(bt_a, result2);
+                getNewButtonText(bt_a, one * two);
                 break;
             case "/":
-                if (et_text.getText().toString().equals("0.0")) {
-                    Toast.makeText(this, "0不能做除数", Toast.LENGTH_SHORT).show();
-                    et_text.setText("");
-                }
-                getNewStringText();
-                Double result3 = one / two;
-                getNewButtonText(bt_a, result3);
+                if (DivisorForZero()) break;
+                getNewButtonText(bt_a, one / two);
                 break;
         }
+    }
+
+    /**
+     * 除数为零时提示信息
+     * @return
+     */
+    private boolean DivisorForZero() {
+        String str_two = Double.toString(two);
+        if (str_two.equals("0.0")) {//当第二次输入为0时
+            Toast.makeText(this, "0不能做除数", Toast.LENGTH_SHORT).show();
+            et_text.setText("");
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -317,34 +356,21 @@ public class MainActivity extends Activity implements View.OnClickListener {
      * "="  等于号处理运算结果
      */
     private void setEqual() {
-        //截取最后一个字串
-        String tem = getTextViewString.substring(getTextViewString.length() - 1);
+        String tem = getTextViewString.substring(getTextViewString.length() - 1);// 截取最后一个字串
+        getNewStringText();// 从新获取数值
         switch (tem) {
             case "+":
-                getNewStringText();//从新获取数值
-                Double result = one + two;
-                tv_show.setText(String.valueOf(result));
+                tv_show.setText(String.valueOf(one + two));
                 break;
             case "-":
-                getNewStringText();
-                Double result1 = one - two;
-                tv_show.setText(String.valueOf(result1));
+                tv_show.setText(String.valueOf(one - two));
                 break;
             case "*":
-                getNewStringText();
-                Double result2 = one * two;
-                tv_show.setText(String.valueOf(result2));
+                tv_show.setText(String.valueOf(one * two));
                 break;
             case "/":
-                getNewStringText();
-                String str_equ = Double.toString(two);
-                if (str_equ.equals("0.0")) {//当第二次输入为0时
-                    Toast.makeText(this, "0不能做除数", Toast.LENGTH_SHORT).show();
-                    et_text.setText("");
-                    return;
-                }
-                Double result3 = one / two;
-                tv_show.setText(String.valueOf(result3));
+                if (DivisorForZero()) break; // 除数为零时
+                tv_show.setText(String.valueOf(one / two));
                 break;
         }
     }
