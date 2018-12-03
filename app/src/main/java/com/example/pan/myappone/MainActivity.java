@@ -177,7 +177,14 @@ public class MainActivity extends Activity implements View.OnClickListener {
         int index = et_text.getSelectionStart();//删除光标前字符
         if (getEditTextString.length() != 0) {
             et_text.getText().delete(index - 1, index);
+        }else {
+            if (getTextViewString.length()!= 0) {
+                String str = getTextViewString.substring(0, getTextViewString.length() - 1);
+                tv_show.setText(str);
+            }
+            return;
         }
+
     }
 
     /**
@@ -210,17 +217,27 @@ public class MainActivity extends Activity implements View.OnClickListener {
      * @param bt_a
      */
     private void setOperation(Button bt_a) {
+
+        if (getEditTextString.equals("") && !getTextViewString.equals("")) {
+            String str = bt_a.getText().toString();
+            tv_show.append(str);
+
+            return;
+        }
         if (getEditTextString.equals("")) {
             Toast.makeText(this, "请输入数字后再运算", Toast.LENGTH_SHORT).show();
             return;
         }
+
+
         if (!getTextViewString.contains("+") && !getTextViewString.contains("-") && !getTextViewString.contains("*") && !getTextViewString.contains("/")) {
             getOperationButton = bt_a.getText().toString();
             one = Double.parseDouble(getEditTextString);
             tv_show.append(one + getOperationButton);
             et_text.setText("");
+
         } else {
-//            bt_equ.performClick();  //执行点击按钮
+//          bt_equ.performClick();  //执行点击按钮
             setRepetitionCount(bt_a);     //设置重复计算
         }
     }
